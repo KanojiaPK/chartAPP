@@ -16,10 +16,10 @@ const Chart = () => {
   const [algoStatus, setAlgoStatus] = useState([]);
   const [filteredLogs, setFilteredLogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sortOrder, setSortOrder] = useState("asc"); // State for sorting order
-  const [startDate, setStartDate] = useState(""); // Start date for filtering
-  const [endDate, setEndDate] = useState(""); // End date for filtering
-  const [filteredChartData, setFilteredChartData] = useState([]); // Chart data after filtering
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [filteredChartData, setFilteredChartData] = useState([]);
 
   useEffect(() => {
     const fetchLogs = async () => {
@@ -90,7 +90,11 @@ const Chart = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="loader" />
+      </div>
+    );
   }
 
   return (
