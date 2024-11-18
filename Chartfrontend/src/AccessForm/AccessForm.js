@@ -2,6 +2,7 @@ import React from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom"; // Import useNavigate hook for navigation
+import apiUrl from "../utils/apiURL";
 
 const AccessForm = () => {
   const navigate = useNavigate(); // Hook to programmatically navigate after form submission
@@ -12,16 +13,13 @@ const AccessForm = () => {
 
     try {
       // Sending the data to the API
-      const response = await fetch(
-        "http://localhost:8003/api/v1/log/submit-log",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values), // Send form data in raw JSON format
-        }
-      );
+      const response = await fetch(`${apiUrl}/api/v1/log/submit-log`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values), // Send form data in raw JSON format
+      });
 
       const responseData = await response.json(); // Get the response data
 

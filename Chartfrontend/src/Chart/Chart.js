@@ -9,6 +9,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import apiUrl from "../utils/apiURL";
 
 const Chart = () => {
   const [chartData, setChartData] = useState([]);
@@ -20,9 +21,7 @@ const Chart = () => {
     const fetchLogs = async () => {
       try {
         // Fetch logs from the API
-        const response = await fetch(
-          "http://localhost:8003/api/v1/log/logsALL"
-        );
+        const response = await fetch(`${apiUrl}/api/v1/log/logsALL`);
         const data = await response.json();
         const logsinfo = data.logs || [];
 
