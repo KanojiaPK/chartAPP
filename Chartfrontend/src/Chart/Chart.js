@@ -24,52 +24,20 @@ const Chart = () => {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        // Fetch logs from the API
         const response = await fetch(`${apiUrl}/api/v1/log/logsALL`);
         const data = await response.json();
         const logsinfo = data.logs || [];
 
-        // Retrieve logged-in user's data from localStorage
         const userData = JSON.parse(localStorage.getItem("userData"));
         const loggedInEmployeeName = userData?.firstname;
 
-        console.log("API Logs:", logsinfo);
-        console.log("Logged-in user name:", loggedInEmployeeName);
-
-        // Filter logs based on employee name
         const filteredLogs = logsinfo.filter(
           (log) => log.employee_name === loggedInEmployeeName
         );
 
-        console.log("Filtered logs for user:", filteredLogs);
-
-        // Set the filtered logs state
         setFilteredLogs(filteredLogs);
 
-        // Filter and map algo_status
-        if (Array.isArray(filteredLogs)) {
-          const filteredAlgoStatus = filteredLogs
-            .filter((log) => log.algo_status !== undefined)
-            .map((log) =>
-              log.algo_status === "Energy Saving Mode ON"
-                ? 1
-                : log.algo_status === "Energy Saving Mode OFF"
-                ? 0
-                : null
-            )
-            .filter((status) => status !== null);
-
-          console.log(
-            "Filtered and mapped algo_status values:",
-            filteredAlgoStatus
-          );
-          setAlgoStatus(filteredAlgoStatus);
-        }
-
-        // Assuming storedData is already available in localStorage
         const storedData = JSON.parse(localStorage.getItem("chartData")) || [];
-
-        // Format the data for the chart
         const formattedData = storedData.map((item) => {
           const date = new Date(item.createdAt);
           const formattedDate = date.toLocaleDateString("en-US", {
@@ -85,20 +53,18 @@ const Chart = () => {
           };
         });
 
-        // Set the chart data state
         setChartData(formattedData);
-        setFilteredChartData(formattedData); // Initially display all chart data
+        setFilteredChartData(formattedData);
       } catch (error) {
         console.error("Error fetching logs:", error);
       } finally {
-        setLoading(false); // Hide loading spinner once data is fetched
+        setLoading(false);
       }
     };
 
     fetchLogs();
   }, []);
 
-  // Function to sort logs by access_time
   const sortLogs = (order) => {
     const sortedLogs = [...filteredLogs].sort((a, b) => {
       const timeA = new Date(`1970-01-01T${a.access_time}`).getTime();
@@ -109,7 +75,6 @@ const Chart = () => {
     setSortOrder(order);
   };
 
-  // Function to filter chart data by date range
   const filterChartData = () => {
     if (!startDate || !endDate) {
       alert("Please select both start and end dates.");
@@ -125,7 +90,7 @@ const Chart = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>; // Show loading message or spinner
+    return <div>Loading...</div>;
   }
 
   return (
@@ -161,22 +126,29 @@ const Chart = () => {
       </div>
 
       {/* Energy Consumption Chart */}
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={filteredChartData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis
-            label={{
-              value: "Energy Consumed (kWh)",
-              angle: -90,
-              position: "insideLeft",
-            }}
-          />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="onMode" name="Energy Consumption" fill="#2078d6" />
-        </BarChart>
-      </ResponsiveContainer>
+      {filteredChartData.length > 0 ? (
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={filteredChartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis
+              label={{
+                value: "Energy Consumed (kWh)",
+                angle: -90,
+                position: "insideLeft",
+                dy: 60,
+              }}
+            />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="onMode" name="Energy Consumption" fill="#2078d6" />
+          </BarChart>
+        </ResponsiveContainer>
+      ) : (
+        <p className="text-lg font-semibold text-center text-gray-600 h-72">
+          No data available for the selected date range.
+        </p>
+      )}
 
       {/* Display logs for the logged-in user */}
       <div className="mt-6">
